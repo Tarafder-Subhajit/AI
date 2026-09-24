@@ -106,10 +106,10 @@ Important files inside .claude are:
   2. start claude session with **/claude**
   3. run **/init** : The command examines the project structure and generates a starter CLAUDE.md. The generated file can include detected build commands, test commands, architecture, dependencies, and coding conventions.
 - **Where they live**
-  1. ~/.claude/CLAUDE.md : This is your user-level instruction file. Instructions written here apply to you across all projects on the current computer.
-  2. ./CLAUDE.md : This is the main shared project instruction file. It can describe the project architecture, common commands, coding standards, testing requirements, and team conventions. Claude loads project instructions at the beginning of the session.
-  3. ./CLAUDE.local.md : This represents personal instructions for one repository only.
-  4. 
+  1. ~/.claude/CLAUDE.md : This is your user-level instruction file. Instructions written here apply to you across all projects on the current computer. (Your preferences across every project)
+  2. ./CLAUDE.md : This is the main shared project instruction file. It can describe the project architecture, common commands, coding standards, testing requirements, and team conventions. Claude loads project instructions at the beginning of the session. (Shared instructions for everyone in this repository)
+  3. ./CLAUDE.local.md : This represents personal instructions for one repository only. (Your personal instructions for this repository, if supported)
+  4. .claude/rules/*.md : The * means that the directory can contain multiple Markdown rule files like python.md, terraform.md etc
 
 
 
