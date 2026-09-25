@@ -87,7 +87,7 @@ your-project/
 
 This configuration applies only to the current project. Shared project settings can be committed to Git so that other developers receive the same configuration.  
 
-2. User-level .claude  
+2. User-level root .claude  
 C:\Users\Subhajit\.claude [WINDOWS]  
 ~/.claude [Linux]
 User-level settings apply to all your projects on the current computer.
@@ -110,6 +110,58 @@ Important files inside .claude are:
   2. ./CLAUDE.md : This is the main shared project instruction file. It can describe the project architecture, common commands, coding standards, testing requirements, and team conventions. Claude loads project instructions at the beginning of the session. (Shared instructions for everyone in this repository)
   3. ./CLAUDE.local.md : This represents personal instructions for one repository only. (Your personal instructions for this repository, if supported)
   4. .claude/rules/*.md : The * means that the directory can contain multiple Markdown rule files like python.md, terraform.md etc
+- **Pull CLAUDE.md from additional directories**  
+  - Normally, CLAUDE.md contains project-specific instructions that Claude Code loads into its context. You can give Claude access to another directory by using --add-dir
+  ```
+  claude --add-dir ../shared-libs
+  ```
+  - However, adding the directory does not necessarily mean its CLAUDE.md instructions will be loaded. To enable that behavior, set this environment variable:
+  ```
+  export CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1
+  ```
+  - So Claude can now use:
+  ```
+  my-project/CLAUDE.md
+  ../shared-libs/CLAUDE.md
+  ```
+  - Instead of specifying --add-dir every time, you can define additional directories in your Claude settings. For example, in .claude/settings.json:
+    ```
+    {
+      "additionalDirectories": [
+        "../shared-libs",
+        "../shared-config"
+      ]
+    }
+    ```
+    Then set the environment variable before launching Claude:
+    ```
+    export CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1
+    claude
+    ```
+    # 6. Claude Auto Memory #
+    Suppose i haven't created claude.md  nor i have created any .claude directory to give project settings, now if i do some progress in Claude then exits it. After revisiting claude, will my progress be lost ??????  
+    **ANSWER: NO!**
+    ```
+    claude --resume
+    ```
+    This is Auto-memory which is present in .claude of root user directory
+    ```
+    /users/<user-name>/.claude/sessions
+    ```
+    # 7. Live Portfolio Project #
+    1. create the project dir
+       ```
+       mkdir projects
+       claude
+       ```
+    2. [OPTIONAL] Sometimes the claude's settings is not optimum, so fix it.
+       ```
+       can u fix the claude settings in this folder?
+       ```
+    3. 
+    
+    
+  
 
 
 
