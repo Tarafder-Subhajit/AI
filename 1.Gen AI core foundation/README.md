@@ -53,3 +53,24 @@
   - Helps the model process text efficiently.
   - Enables handling of unknown or rare words.
   - Forms the foundation of how LLMs understand and generate language.
+ 
+  ## Implementing custom tokenizer in Python
+  1. create a vitual env in python and activate it:  
+     $python -m venv venv
+     $source venv/bin/activate
+  2. install the package - $pip install tiktoken
+  3. create the requirements.txt : pip freeze > requirements.txt
+  4. write the following code in main.py:   
+
+```python
+import tiktoken
+
+enc = tiktoken.encoding_for_model("gpt-4o")
+
+text = "Hey There! My name is Piyush Garg"
+tokens = enc.encode(text)
+
+print("Tokens", tokens)
+```
+
+
