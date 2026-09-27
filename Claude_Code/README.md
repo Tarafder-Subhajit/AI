@@ -158,7 +158,12 @@ Important files inside .claude are:
        ```
        can u fix the claude settings in this folder?
        ```
-    3. 
+    3. Enable Plan mode
+       ```
+       /plan
+       ```
+       ```
+       Lets plan for a portfolio website that will have my projects showcased from my github https://github.com/Tarafder-Subhajit - this will be running on a docker container, nginx will serve the web page and the website will be running via ngrok. I dont need backend for now. Code it in such a way that it has phase wise development, where later phases will have backend and database connection as well. Ask me clarifying questions. Create tasks.md that will track the tasks you will be planning to do
     
     
   
