@@ -163,7 +163,35 @@ Important files inside .claude are:
        /plan
        ```
        ```
-       Lets plan for a portfolio website that will have my projects showcased from my github https://github.com/Tarafder-Subhajit - this will be running on a docker container, nginx will serve the web page and the website will be running via ngrok. I dont need backend for now. Code it in such a way that it has phase wise development, where later phases will have backend and database connection as well. Ask me clarifying questions. Create tasks.md that will track the tasks you will be planning to do
+       Lets plan for a portfolio website that will have my projects showcased from my github https://github.com/Tarafder-Subhajit - this will be running on a docker container, nginx will serve the web page and the website will be running via ngrok. I dont need backend for now. Code it in such a way that it has phase wise development, where later phases will have backend and database connection as well. Ask me clarifying questions. Create tasks.md that will track the tasks you will be planning to do and create a folder called decisions/ where all the decisions made by you will be tracked so that we can do context management easily.
+       ```
+       <img width="1292" height="542" alt="image" src="https://github.com/user-attachments/assets/9d3d7b19-7039-49dc-a4a1-62709162b31a" />
+       <img width="1301" height="558" alt="image" src="https://github.com/user-attachments/assets/bf3f5ed0-2f28-4909-9ac2-8e54eed1ce15" />
+       <img width="1292" height="497" alt="image" src="https://github.com/user-attachments/assets/dad7266a-166e-483c-b8a8-aba54fa6f034" />
+       <img width="1280" height="492" alt="image" src="https://github.com/user-attachments/assets/1ee80231-0e5e-4b20-82d8-141f255c579b" />
+
+       ***NOTE***: We will get an error saying "**MKDIR was denied!**" because we have mentioned in settings.json previosly to ask before making a folder.
+       So,
+       ```
+       Can you allow creating folder in project settings so that the background tools don't get access denied.
+       ```
+    4. Do the following:  
+       <img width="952" height="168" alt="image" src="https://github.com/user-attachments/assets/9e6963e5-a0cb-4659-8b15-ceb923d39191" />  
+       a. copy the .env.example to .env  
+       b. vim .env  
+       c. provide github token (create it) & provide ngrok auth token (go to ngrok , login & create it)
+
+    5. Go to claude
+       ```
+       I have copied the .env. Now do the docker compose and make the application run.
+       ```
+
+       
+
+
+
+
+
     
     
   
