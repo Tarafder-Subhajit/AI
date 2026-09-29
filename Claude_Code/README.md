@@ -138,7 +138,7 @@ Important files inside .claude are:
     export CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1
     claude
     ```
-    # 6. Claude Auto Memory #
+# 6. Claude Auto Memory #
     Suppose i haven't created claude.md  nor i have created any .claude directory to give project settings, now if i do some progress in Claude then exits it. After revisiting claude, will my progress be lost ??????  
     **ANSWER: NO!**
     ```
@@ -185,18 +185,512 @@ Important files inside .claude are:
        ```
        I have copied the .env. Now do the docker compose and make the application run.
        ```
+# 7. Settings.json #  
+The control panel. Everything configurable lives here  
+```
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "auto",
+  "outputStyle": "Default",
+  "includeCoAuthoredBy": true,
+  "tui": "default",
+  "autoScrollEnabled": true,
+  "disableSkillShellExecution": false,
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git *)",
+      "Bash(pnpm *)",
+      "Read(./**)"
+    ],
+    "deny": [
+      "Read(./.env*)",
+      "Read(./secrets/**)",
+      "Bash(curl *)",
+      "Bash(rm -rf *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(npm publish *)"
+    ],
+    "additionalDirectories": ["../shared-libs/"]
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "DISABLE_AUTOUPDATER": "0",
+    "SLASH_COMMAND_TOOL_CHAR_BUDGET": "8192",
+    "ENABLE_PROMPT_CACHING_1H": "1"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          { "type": "command", "command": "prettier --write \"$CLAUDE_FILE_PATHS\"" }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+trainwithshubham.com 15
+"enabledPlugins": {
+"python-library-complete@python-library-dev": true
+}
+}
+```
+1. Schema: Detect invalid settings, Show autocomplete suggestions, Highlight JSON errors, Explain supported properties
+2. **"model": "auto"** : This tells to select an appropriate model automatically rather than forcing a specific model. Anthropic-side router picks Opus/Sonnet/Haiku per turn (Max only)
+3. **"outputStyle": "Default"**: Default means Claude uses its standard response style instead of a custom output style. custom output style might tell Claude to Give very short responses, Behave like a tutor, Explain code step by step etc
+4. **"tui": "default"**: This tells Claude to use its normal terminal interface.
+5. **"autoScrollEnabled": true**: This allows the terminal output to automatically scroll as Claude generates responses or tool output.
 
-       
+# 8. Hooks #
+Suppose I want to review the above code, so i wont be giving prompts like " Can you review my code? ".  
+Instead I will use hooks by configuring settings.json.  
+Hooks are automation points that run automatically at specific stages of Claude Code's lifecycle.  
+```
+/hooks
+```
+<img width="700" height="736" alt="image" src="https://github.com/user-attachments/assets/8fc92422-90fb-41fa-a699-38c395ecdb2a" />
 
+Or we can directly give prompts like:  
+```
+can you create a hook for FileChanged - whenever there is a file change, you run a subagent that review the changed file code. This subsgent should reside in .claude repo locally. Also use the best coding and code review practices for this subagent.
+```
+NOTE: it might ask you to restart claude.  
+Verify: Go to your project, go to .claude directory & open settings.local.json then you will see the hooks
+<img width="500" height="537" alt="image" src="https://github.com/user-attachments/assets/36b249a5-ba68-4623-80d5-542950548ace" />
 
+# 9. Slash Commands #
+It is like a menu of commands that clause uses.  
+<img width="602" height="872" alt="image" src="https://github.com/user-attachments/assets/89b1be44-7aab-4544-bb5d-a68f067c625c" />
+# 10. Custom Slash Commands & Skills #
+## Custom Slash Command ##
+A custom slash command is a reusable prompt stored in a Markdown file. E.g. Review the Terraform files for security problems, hardcoded credentials, incorrect resource configuration, and missing tags.
+We can create:  
+```
+/check-terraform
+```
+Project Level Custom Command:  
+```
+your-project/
+├── .claude/
+│   └── commands/
+│       └── deploy-check.md
+├── CLAUDE.md
+└── src/
+```
+Creating a Custom Slash Command:  
+```
+mkdir -p .claude/commands
+vim .claude/commands/deploy-check.md
+```
+Add the following instructions:
+```
+Review the project before deployment.
 
+Check the following:
 
+1. Verify that all tests pass.
+2. Check for hardcoded credentials.
+3. Review environment variables.
+4. Validate the Dockerfile.
+5. Review Kubernetes manifests.
+6. Check whether rollback instructions exist.
+7. Report critical, warning, and informational findings separately.
+```
+Now open Claude Code in the project and run:
+```
+/deploy-check
+```
+## Skill ##
+A skill is a reusable package of instructions that teaches Claude Code how to perform a particular workflow.  
+In the current Claude Code system, custom commands have been merged into skills.  
+Both of these can create the same /deploy command:  
+```
+.claude/commands/deploy.md
+```
+and
+```
+.claude/skills/deploy/SKILL.md
+```
+So, Custom slash command = Older and simpler structure  
+Skill = Newer and more powerful structure
 
-    
-    
-  
+SKILL.md:  
+```
+---
+name: commit
+description: Create a conventional commit with proper scope and body.
+when_to_use: User says "commit", "ship this", "push it", or asks to create a git commit.
+arguments:
+     - name: scope
+       description: Optional scope override (defaults to inferred from changed files)
+allowed-tools: Bash(git *)
+model: claude-sonnet-4-6
+effort: medium
+context: fork
+agent: Default
+paths: ["**/*"]
+shell: true
+hooks:
+  PostToolUse:
+    - matcher: Bash
+      command: ./scripts/post-commit-lint.sh--
+---
+You are creating a git commit. Follow the conventional commits spec.
+Steps:
+1. Run `git status` and `git diff --staged`.
+2. Pick a type: feat, fix, refactor, docs, test, chore.
+3. Pick a scope from the changed files (or use $scope).
+4. Write subject < 60 chars, imperative mood.
+5. If breaking change, add `BREAKING CHANGE:` footer.
+6. Read @conventional.md for the full spec.
+7. Inline a status line:  !`git rev-parse --short HEAD` → previous SHA
+8. Run `git commit -m "..."` (use heredoc for multi-line).
+Print the commit hash when done. Working in: ${CLAUDE_SKILL_DIR}
+```
 
+# 11. Subagents and Agent Teams
 
+Both features allow Claude Code to divide a large task into smaller pieces. The main difference is **how the agents communicate and coordinate their work**.
 
+---
 
+## A. What Is a Subagent?
 
+A **subagent** is a specialized worker created inside your current Claude Code session.  
+It receives a focused task, works in its own context window, and returns the result to the main agent.
+
+```text
+Main Claude session
+        |
+        | Assigns task
+        v
+     Subagent
+        |
+        | Returns result
+        v
+Main Claude session
+```
+
+For example, while developing a project, the main agent may delegate work to:
+
+- A code-review subagent
+- A security-analysis subagent
+- A test-writing subagent
+- A documentation subagent
+- A codebase-exploration subagent
+
+Each subagent can have its own:
+
+- System prompt
+- Context window
+- Model
+- Tool access
+- Permission settings
+- Hooks
+- Skills
+
+Because large search results, logs, and file contents remain inside the subagent's context, the main conversation stays cleaner.
+
+---
+
+## B. Simple Subagent Example
+
+Suppose you ask:
+
+```text
+Analyze this Terraform project and identify security issues.
+```
+
+The main agent could delegate the work like this:
+
+```text
+Main agent
+   |
+   +-- Terraform security subagent
+           |
+           +-- Searches Terraform files
+           +-- Checks IAM permissions
+           +-- Checks open security groups
+           +-- Checks unencrypted storage
+           +-- Returns a summarized report
+```
+
+The subagent performs the detailed investigation, but only the useful findings are returned to the main conversation.
+
+This is useful for DevOps work because codebase searches, Terraform reviews, Kubernetes manifest checks, and CI/CD log analysis can consume a large amount of context.
+
+---
+
+## C. Built-In Subagents
+
+Claude Code includes built-in subagents such as:
+
+### Explore
+
+Used for fast, read-only codebase exploration.
+
+```text
+Find where the application reads AWS credentials.
+```
+
+The Explore agent can search and analyze files but cannot edit them.
+
+### Plan
+
+Used for researching the codebase and preparing an implementation plan.
+
+```text
+Plan how to migrate this project from Jenkins to GitHub Actions.
+```
+
+### General-Purpose
+
+Used for more complex, multi-step tasks that may require broader tool access.
+
+Claude Code can automatically choose a subagent when it determines that delegation is helpful.
+
+---
+
+## D. Custom Subagents
+
+You can create your own reusable subagents as Markdown files containing YAML frontmatter.
+
+### Project-Level Subagents
+
+```text
+your-project/
+└── .claude/
+    └── agents/
+        ├── terraform-reviewer.md
+        ├── kubernetes-reviewer.md
+        └── documentation-writer.md
+```
+
+These are available only inside that project.
+
+### Personal Subagents
+
+```text
+~/.claude/
+└── agents/
+    ├── security-reviewer.md
+    └── powershell-reviewer.md
+```
+
+These are available across your projects.
+
+---
+
+## E. Custom Subagent Example
+
+For a DevOps use case, create the following file:
+
+```text
+.claude/agents/terraform-reviewer.md
+```
+
+Add this content:
+
+```yaml
+---
+name: terraform-reviewer
+description: Reviews Terraform code for security, reliability, formatting, and AWS best practices. Use after Terraform files are created or modified.
+tools: Read, Grep, Glob
+model: sonnet
+---
+
+You are a Terraform and AWS infrastructure review specialist.
+
+Review Terraform files for:
+
+1. Security risks
+2. Overly permissive IAM policies
+3. Publicly accessible resources
+4. Missing encryption
+5. Missing tags
+6. Hardcoded values
+7. State management problems
+8. Terraform formatting issues
+
+Do not modify files.
+
+For every issue, provide:
+
+- File name
+- Line number
+- Problem
+- Risk
+- Recommended correction
+```
+
+Because only read-oriented tools are provided, this subagent can inspect the project but cannot modify files.
+
+A clear `description` is important because Claude Code uses it to decide when it should delegate a task to that subagent.
+
+---
+
+## F. Invoking a Subagent
+
+You can explicitly ask Claude Code to use a particular subagent:
+
+```text
+Use the terraform-reviewer subagent to review the files under infrastructure/.
+```
+
+You can also ask it to run multiple focused reviews:
+
+```text
+Use separate subagents to review:
+
+1. Terraform security
+2. Kubernetes manifests
+3. GitHub Actions workflows
+
+Return a consolidated report without modifying any files.
+```
+
+The basic workflow is:
+
+```text
+                    +-- Terraform reviewer
+                    |
+Main Claude agent --+-- Kubernetes reviewer
+                    |
+                    +-- GitHub Actions reviewer
+                             |
+                             v
+                      Consolidated report
+```
+
+The workers perform focused tasks and report the results to the main agent.
+
+---
+
+## Agent Teams
+
+## G. What Is an Agent Team?
+
+An **agent team** is a collection of independent Claude Code sessions working together.
+
+One session acts as the **team lead**. It creates tasks, assigns work, monitors progress, and combines the final results.
+
+```text
+                     Team lead
+                  /      |       \
+                 /       |        \
+        Terraform     Kubernetes   CI/CD
+        teammate      teammate     teammate
+```
+
+Unlike normal subagents, teammates can:
+
+- Communicate directly with one another
+- Share findings
+- Challenge another teammate's conclusion
+- Claim work from a shared task list
+- Coordinate dependencies
+- Receive messages directly from the user
+
+Each teammate has its own independent context window.
+
+Agent teams are best for complex work where collaboration between agents is necessary.
+
+---
+
+## H. Enabling Agent Teams
+
+Agent teams are experimental and disabled by default.
+
+### Linux or macOS
+
+```bash
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+```
+
+### Windows PowerShell
+
+```powershell
+$env:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"
+```
+
+### Using `settings.json`
+
+### Using `settings.json`
+ 
+Add the following configuration to your Claude Code `settings.json` file:
+ 
+```json
+{
+"env": {
+"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+}
+}
+```
+ 
+Agent teams may have limitations involving:
+ 
+- Session resumption
+- Task coordination
+- Teammate shutdown
+- Token consumption
+ 
+---
+ 
+## I. Starting an Agent Team
+ 
+After enabling the feature, describe the required team in natural language:
+ 
+```text
+Create an agent team to review this Kubernetes application.
+ 
+Assign:
+ 
+1. One teammate to review Kubernetes manifests.
+2. One teammate to review container security.
+3. One teammate to review CI/CD workflows.
+4. One teammate to review monitoring and observability.
+ 
+Ask the teammates to share important findings with each other.
+The team lead should produce one consolidated report.
+Do not modify files.
+```
+ 
+The team lead can then:
+ 
+1. Create a shared task list.
+2. Start the requested teammates.
+3. Assign tasks or let teammates claim tasks.
+4. Monitor their progress.
+5. Resolve dependencies.
+6. Combine the final results.
+ 
+You can also select a teammate from the agent panel and communicate with that teammate directly.
+ 
+---
+ 
+## J. Subagents vs Agent Teams
+ 
+| Feature | Subagents | Agent Teams |
+|---|---|---|
+| Structure | Worker inside one session | Multiple independent sessions |
+| Context | Separate context window | Each teammate has an independent context |
+| Communication | Returns results to the main agent | Teammates communicate directly |
+| Coordination | Main agent manages the work | Shared task list and team coordination |
+| Token usage | Usually lower | Usually higher |
+| Complexity | Simpler | More complex |
+| Best for | Focused and isolated tasks | Large collaborative tasks |
+| Status | Regular Claude Code feature | Experimental |
+| Example | Review one Terraform module | Review an entire cloud platform |
+ 
+> **Simple rule:** Use **subagents** when workers only need to return their results. Use an **agent team** when workers need to communicate and coordinate with each other.
+ 
+---
+
+# 12. MCP
