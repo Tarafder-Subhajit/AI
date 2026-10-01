@@ -735,9 +735,11 @@ call
      /mcp
      ```
      <img width="702" height="473" alt="image" src="https://github.com/user-attachments/assets/4a87ce28-821d-4410-9487-f5bccd1edc78" />
+     
      Github needs authentication, so Enter to authenticate.
+     
      ```
-     create a github repo on my github called claude-code-demo and push this folder with all the project and files. The repo should be Public. Use github mcp tools. Ensure .env is safe in .gitignore mindfully.
+     create a github repo on my github called claude-code-demo and push this folder with all the project and files. The repo should be Public. Use github mcp           tools. Ensure .env is safe in .gitignore mindfully.
      ```
 
      
