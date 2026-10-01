@@ -716,5 +716,30 @@ call
 - **Example: Add Github MCP server**
   1. Go to google and type "Github MCP server"
      <img width="922" height="661" alt="image" src="https://github.com/user-attachments/assets/b36332d8-3bc4-4f78-b40b-a11342aa7f18" />
+  2. Give the following prompt:
+     ```
+     I want to install github MCP server from URL "https://github.com/github/github-mcp-server",
+     the PAT is kept inside .env and URL of MCP server is "https://api.githubcopilot.com/mcp/"
+     ```
+  **OR**  
+  1. Exit the claude agent and go inside .claude directory
+  2. Enter the following command:
+     ```
+     Export GITHUB_TOKEN= <paste the github token> [make sure that the token has majority of the access like read, write, delete, copilot etc]
+     claude mcp add --scope user --transport http github https://api.githubcopilot.com/mcp/
+     ```
+     Make sure you reload the claude agent if it is open.
+  3. Check
+     ```
+     claude
+     /mcp
+     ```
+     <img width="702" height="473" alt="image" src="https://github.com/user-attachments/assets/4a87ce28-821d-4410-9487-f5bccd1edc78" />
+     Github needs authentication, so Enter to authenticate.
+     ```
+     create a github repo on my github called claude-code-demo and push this folder with all the project and files. The repo should be Public. Use github mcp tools. Ensure .env is safe in .gitignore mindfully.
+     ```
+
+     
 
 
