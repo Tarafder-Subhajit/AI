@@ -693,4 +693,28 @@ You can also select a teammate from the agent panel and communicate with that te
  
 ---
 
-# 12. MCP
+# 12. MCP (Model Context Protocol)
+- This is a protocol, not any tool
+```
+You -> [LLM -> Tool]
+Suppose the tool is Uber Cab Booking tool. So How it is supposed to recognize the Uber tool as it is external.
+MCP!!!!
+
+You
+  ↓
+Claude
+  ↓
+MCP Client
+  ↓
+MCP Server
+  ↓
+GitHub / Jira / AWS / Files / Database / Kubernetes
+```
+- Model Context Protocol = standardized way for external systems to expose tools to Claude.
+GitHub, Slack, Postgres, Linear, Notion, Puppeteer, your internal API — they all become tools Claude can
+call
+- **Example: Add Github MCP server**
+  1. Go to google and type "Github MCP server"
+     <img width="922" height="661" alt="image" src="https://github.com/user-attachments/assets/b36332d8-3bc4-4f78-b40b-a11342aa7f18" />
+
+
