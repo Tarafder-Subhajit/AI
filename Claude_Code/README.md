@@ -742,6 +742,63 @@ call
      create a github repo on my github called claude-code-demo and push this folder with all the project and files. The repo should be Public. Use github mcp           tools. Ensure .env is safe in .gitignore mindfully.
      ```
 
+# 13. Plugins & Marketplces
+- A plugin is a package that can contain one or more Claude Code extensions: Skills, Hooks, Slash commands, MCP server etc
+- A marketplace is a catalog of plugins. It tells Claude Code:
+    Which plugins are available  
+    Where each plugin is stored  
+    Which version should be downloaded  
+    Where updates should come from  
+- A marketplace is normally a Git repository containing a .claude-plugin/marketplace.json file.
+<img width="888" height="377" alt="image" src="https://github.com/user-attachments/assets/6ce5b7de-b13f-4a0b-b1de-f09bec5e09e4" />
+
+## Your first plugin: step by step  
+  1. Start Claude
+     ```
+     Claude
+     ```
+
+  2. Browse plugin
+     ```
+     plugin
+     ```
+  3. Open a plugin’s installation details
+     ```
+     /plugin install commit-commands@claude-plugins-official
+     ```
+     this command has two parts:
+     ```
+     plugin-name@marketplace-name
+     ```
+  4. Choose the scope :   
+      User: available to you across projects on this computer.  
+      Project: enabled for collaborators in the repository.  
+      Local: available only to you in this repository.
+
+  5. Check its command
+     After installation and activation, type / to find its commands. This plugin provides the following command:
+     ```
+     /commit-commands:commit
+     ```
+     ```
+     /plugin-name:skill-name
+     ```
+## Managing installed plugins
+Open /plugin and use:  
+    Installed: inspect and manage installed plugins.  
+    Marketplaces: manage registered catalogs.  
+    Errors: investigate loading failures.  
+
+List Installed Plugins:  
+```
+claude plugin list
+```
+
+## Sample DevOps Plugin
+I created devops-toolkit, a beginner-friendly plugin designed to review CI/CD configurations without editing files or deploying infrastructure.
+
+
+
      
 
 
