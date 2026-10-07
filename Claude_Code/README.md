@@ -795,7 +795,15 @@ claude plugin list
 ```
 
 ## Sample DevOps Plugin
-I created devops-toolkit, a beginner-friendly plugin designed to review CI/CD configurations without editing files or deploying infrastructure.
+I created devops-toolkit, a beginner-friendly plugin designed to review CI/CD configurations without editing files or deploying infrastructure.  
+https://github.com/Tarafder-Subhajit/AI/tree/c539b7b9e959d5873a875213708af81ce9cf14f5/Claude_Code/devops-toolkit  
+The sample skill is instructed to:
+
+Explain pipeline stages.  
+Review triggers, tests, permissions, credentials handling, and deployment conditions.  
+Report findings with file and line evidence.  
+Suggest improvements without applying changes.  
+
 
 
 
